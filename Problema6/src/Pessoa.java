@@ -20,16 +20,20 @@ public class Pessoa extends Thread {
         entrado_saindo.lock();
         int disponivel = banheiro.availablePermits();
         if (disponivel > 0 && ((homem && banheiro_masculino) || (!homem && banheiro_feminino))) {
-            System.out.println(nome + " entrou no banheiro");
+            if (homem){
+                System.out.println(nome + " (Homem) entrou no banheiro");
+            } else {
+                System.out.println(nome + " (Mulher) entrou no banheiro");
+            }
             banheiro.acquire(1);
             entrado_saindo.unlock();
             saindo_banheiro();
         } else if (!banheiro_feminino && !banheiro_masculino){
             if (homem){
-                System.out.println(nome + " entrou no banheiro, e por ser homem, nenhuma mulher poderá entrar");
+                System.out.println(nome + " (Homem) entrou no banheiro, e agora nenhuma mulher poderá entrar");
                 banheiro_masculino = true;
             } else {
-                System.out.println(nome + " entrou no banheiro, e por ser mulher, nenhum homem poderá entrar");
+                System.out.println(nome + " (Mulher) entrou no banheiro, e agora nenhum homem poderá entrar");
                 banheiro_feminino = true;
             }
             banheiro.acquire(1);
@@ -41,17 +45,21 @@ public class Pessoa extends Thread {
 
     }
     private void saindo_banheiro() throws InterruptedException {
-         sleep(((nome % 3) + 1)*10);
+         sleep(((nome % 3) + 1));
          entrado_saindo.lock();
          usou_banheiro = true;
-         System.out.println(nome + " está saindo do banheiro");
+        if (homem){
+            System.out.println(nome + " (Homem) saiu do banheiro");
+        } else {
+            System.out.println(nome + " (Mulher) saiu do banheiro");
+        }
          banheiro.release(1);
          if (banheiro.availablePermits() == 3) {
              if (homem){
-                 System.out.println(nome + " foi o ultimo homem a sair do banheiro");
+                 System.out.println(nome + " deixou o banheiro vazio, agora qualquer um pode entrar");
                  banheiro_masculino = false;
              } else {
-                 System.out.println(nome + " foi a ultima mulher a sair do banheiro");
+                 System.out.println(nome + " deixou o banheiro vazio, agora qualquer um pode entrar");
                  banheiro_feminino = false;
              }
          }
@@ -59,9 +67,9 @@ public class Pessoa extends Thread {
     }
     public void run() {
         if (homem) {
-            System.out.println("Homem " + nome + " deseja usar o banheiro");
+            System.out.println(nome + " (Homem) deseja usar o banheiro");
         } else {
-            System.out.println("Mulher " + nome + " deseja usar o banheiro");
+            System.out.println(nome + " (Homem) deseja usar o banheiro");
         }
         while (!usou_banheiro) {
             try {
