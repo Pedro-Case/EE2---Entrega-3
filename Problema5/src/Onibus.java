@@ -46,6 +46,7 @@ public class Onibus extends Thread{
                     throw new RuntimeException(e);
                 }
             } else {
+                System.out.println("Fim do Expediente!");
                 onibus_passageiro_chegando.unlock();
             }
         }
